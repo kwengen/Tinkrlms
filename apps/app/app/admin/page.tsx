@@ -23,15 +23,21 @@ export default async function AdminPage() {
 
       <ul className="mt-6 flex flex-col gap-2 text-sm">
         {isSuperadmin && (
-          <li>
-            <Link href="/admin/users/invite" className="text-blue-700 underline">
-              Inviter ny bruker
-            </Link>
-          </li>
+          <>
+            <li>
+              <Link href="/admin/users/invite" className="text-blue-700 underline">
+                Inviter ny bruker
+              </Link>
+            </li>
+            <li>
+              <Link href="/admin/courses/import" className="text-blue-700 underline">
+                Importer cmi5-kurs
+              </Link>
+            </li>
+          </>
         )}
         <li className="text-gray-400">
-          Kurskatalog, organisasjoner og kundeadmin-tildeling kommer i neste
-          byggefase.
+          Organisasjoner og kundeadmin-tildeling kommer i neste byggefase.
         </li>
       </ul>
     </main>
