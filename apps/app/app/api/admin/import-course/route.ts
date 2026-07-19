@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
-import { importCmi5Course, type ImportCoursePorts } from "@tinkr/shared";
+import { guessContentType, importCmi5Course, type ImportCoursePorts } from "@tinkr/shared";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { getServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
 
@@ -15,34 +15,6 @@ const fieldsSchema = z.object({
   description: z.string().optional(),
   publisher: z.string().optional(),
 });
-
-function contentTypeFor(path: string): string {
-  const ext = path.slice(path.lastIndexOf(".")).toLowerCase();
-  const types: Record<string, string> = {
-    ".html": "text/html",
-    ".htm": "text/html",
-    ".js": "application/javascript",
-    ".mjs": "application/javascript",
-    ".css": "text/css",
-    ".json": "application/json",
-    ".xml": "application/xml",
-    ".png": "image/png",
-    ".jpg": "image/jpeg",
-    ".jpeg": "image/jpeg",
-    ".gif": "image/gif",
-    ".svg": "image/svg+xml",
-    ".webp": "image/webp",
-    ".ico": "image/x-icon",
-    ".mp4": "video/mp4",
-    ".webm": "video/webm",
-    ".mp3": "audio/mpeg",
-    ".wav": "audio/wav",
-    ".woff": "font/woff",
-    ".woff2": "font/woff2",
-    ".ttf": "font/ttf",
-  };
-  return types[ext] ?? "application/octet-stream";
-}
 
 export async function POST(request: NextRequest) {
   const sessionClient = createServerSupabaseClient();
@@ -92,7 +64,7 @@ export async function POST(request: NextRequest) {
   const ports: ImportCoursePorts = {
     async uploadFile(storagePath, content) {
       const { error } = await admin.storage.from(STORAGE_BUCKET).upload(storagePath, content, {
-        contentType: contentTypeFor(storagePath),
+        contentType: guessContentType(storagePath),
         upsert: false, // immutable per-version path (bestilling §9c) — never overwrite
       });
       if (error) throw new Error(`Storage upload failed for ${storagePath}: ${error.message}`);

@@ -343,6 +343,8 @@ export interface Database {
           token_expires_at: string;
           ended_at: string | null;
           status: SessionStatusType;
+          fetch_nonce_hash: string | null;
+          fetch_consumed_at: string | null;
         };
         Insert: {
           session_id?: string;
@@ -353,6 +355,8 @@ export interface Database {
           token_expires_at: string;
           ended_at?: string | null;
           status?: SessionStatusType;
+          fetch_nonce_hash?: string | null;
+          fetch_consumed_at?: string | null;
         };
         Update: {
           session_id?: string;
@@ -363,6 +367,8 @@ export interface Database {
           token_expires_at?: string;
           ended_at?: string | null;
           status?: SessionStatusType;
+          fetch_nonce_hash?: string | null;
+          fetch_consumed_at?: string | null;
         };
       } & NoRelationships;
 
@@ -582,6 +588,23 @@ export interface Database {
       has_role_in_org: { Args: { p_uid: string; p_role: UserRole; p_org_id: string }; Returns: boolean };
       has_any_role_in_org: { Args: { p_uid: string; p_roles: UserRole[]; p_org_id: string }; Returns: boolean };
       has_role: { Args: { p_uid: string; p_role: UserRole }; Returns: boolean };
+      launch_registration: {
+        Args: {
+          p_enrollment_id: string;
+          p_au_id: string;
+          p_org_id: string;
+          p_user_id: string;
+          p_token_expires_at: string;
+          p_launch_mode?: LaunchModeType;
+        };
+        Returns: {
+          out_registration_id: string;
+          out_registration_uuid: string;
+          out_session_id: string;
+          out_attempt_number: number;
+          out_is_new_registration: boolean;
+        }[];
+      };
     };
     Enums: {
       user_role: UserRole;
