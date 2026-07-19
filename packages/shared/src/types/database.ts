@@ -588,6 +588,10 @@ export interface Database {
       has_role_in_org: { Args: { p_uid: string; p_role: UserRole; p_org_id: string }; Returns: boolean };
       has_any_role_in_org: { Args: { p_uid: string; p_roles: UserRole[]; p_org_id: string }; Returns: boolean };
       has_role: { Args: { p_uid: string; p_role: UserRole }; Returns: boolean };
+      recompute_course_completion: {
+        Args: { p_enrollment_id: string };
+        Returns: undefined;
+      };
       launch_registration: {
         Args: {
           p_enrollment_id: string;

@@ -1,7 +1,10 @@
 import type { LaunchModeType, MoveOnType } from "../types/database";
+import { CMI5_CATEGORY_ACTIVITY_ID, CMI5_SESSION_ID_EXTENSION } from "../xapi/cmi5-constants";
 
-export const CMI5_CATEGORY_ACTIVITY_ID = "https://w3id.org/xapi/cmi5/context/categories/cmi5";
-export const CMI5_SESSION_ID_EXTENSION = "https://w3id.org/xapi/cmi5/context/extensions/sessionid";
+// Re-exported for backward compatibility — callers that imported these two
+// constants from this module (rather than xapi/cmi5-constants directly)
+// keep working.
+export { CMI5_CATEGORY_ACTIVITY_ID, CMI5_SESSION_ID_EXTENSION };
 
 export interface BuildLaunchDataInput {
   launchMode: LaunchModeType;
