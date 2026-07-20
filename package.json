@@ -1,0 +1,23 @@
+{
+  "name": "tinkrakademiet-lms",
+  "private": true,
+  "version": "0.1.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev:app": "pnpm --filter @tinkr/app dev",
+    "dev:player": "pnpm --filter @tinkr/player dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:reset": "supabase db reset",
+    "fetch:catapult": "bash scripts/fetch-catapult.sh"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0"
+  }
+}
