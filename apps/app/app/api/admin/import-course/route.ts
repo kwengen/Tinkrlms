@@ -67,7 +67,10 @@ export async function POST(request: NextRequest) {
         contentType: guessContentType(storagePath),
         upsert: false, // immutable per-version path (bestilling §9c) — never overwrite
       });
-      if (error) throw new Error(`Storage upload failed for ${storagePath}: ${error.message}`);
+      if (error) {
+        const details = JSON.stringify(error, Object.getOwnPropertyNames(error));
+        throw new Error(`Storage upload failed for ${storagePath}: ${error.message} — ${details}`);
+      }
     },
     async insertContentPackage(row) {
       const { data, error } = await admin.from("content_packages").insert(row).select("id").single();
