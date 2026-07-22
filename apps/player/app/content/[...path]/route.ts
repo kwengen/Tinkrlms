@@ -23,7 +23,9 @@ export async function GET(
 
   const { data, error } = await supabase.storage.from(STORAGE_BUCKET).download(storagePath);
   if (error || !data) {
-    return new NextResponse("Not found", { status: 404 });
+    const details = error ? JSON.stringify(error, Object.getOwnPropertyNames(error)) : "no error object, but no data";
+    console.error("[content proxy] download failed", { storagePath, details });
+    return new NextResponse(`Not found: ${storagePath} — ${details}`, { status: 404 });
   }
 
   const buffer = Buffer.from(await data.arrayBuffer());
