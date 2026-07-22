@@ -3,7 +3,18 @@ import { NextResponse, type NextRequest } from "next/server";
 
 // Routes reachable without a Supabase session. /verify/* is the public
 // certificate verification page (bestilling §8: no login required).
-const PUBLIC_PATH_PREFIXES = ["/login", "/auth", "/verify", "/no-access"];
+// /api/cmi5/fetch-token and /api/xapi/* are called cross-origin by the
+// player/AU content, which never holds a Supabase session cookie — they
+// authenticate callers themselves via the single-use fetch nonce and the
+// scoped launch JWT (bestilling §5), not via this session gate.
+const PUBLIC_PATH_PREFIXES = [
+  "/login",
+  "/auth",
+  "/verify",
+  "/no-access",
+  "/api/cmi5/fetch-token",
+  "/api/xapi",
+];
 
 function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATH_PREFIXES.some(
