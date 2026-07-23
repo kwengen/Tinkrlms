@@ -9,6 +9,7 @@ import {
 } from "@tinkr/shared";
 import { getServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
 import { corsHeaders, corsPreflightResponse } from "@/lib/cors";
+import { maybeIssueCertificate } from "@/lib/certificates";
 
 export const runtime = "nodejs";
 
@@ -127,6 +128,11 @@ export async function POST(request: NextRequest) {
   };
 
   const result = await ingestStatements(body, token, ports, { appOrigin: process.env.APP_ORIGIN! });
+
+  // Regardless of the batch's overall status: any statement processed
+  // before a later failure may already have driven this enrollment to
+  // satisfied via recomputeCourseCompletion above. Cheap no-op otherwise.
+  await maybeIssueCertificate(registration.enrollment_id);
 
   return NextResponse.json({ results: result.results }, { status: result.status, headers: corsHeaders() });
 }

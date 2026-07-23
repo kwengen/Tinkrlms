@@ -609,6 +609,14 @@ export interface Database {
           out_is_new_registration: boolean;
         }[];
       };
+      issue_certificate: {
+        Args: {
+          p_enrollment_id: string;
+          p_cert_uuid: string;
+          p_pdf_storage_path: string;
+        };
+        Returns: { certificate_id: string; already_issued: boolean }[];
+      };
     };
     Enums: {
       user_role: UserRole;
