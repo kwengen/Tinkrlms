@@ -36,18 +36,27 @@ export interface Database {
           org_id: string | null;
           full_name: string | null;
           created_at: string;
+          privacy_notice_ack_at: string | null;
+          privacy_notice_version: string | null;
+          pseudonymized_at: string | null;
         };
         Insert: {
           user_id: string;
           org_id?: string | null;
           full_name?: string | null;
           created_at?: string;
+          privacy_notice_ack_at?: string | null;
+          privacy_notice_version?: string | null;
+          pseudonymized_at?: string | null;
         };
         Update: {
           user_id?: string;
           org_id?: string | null;
           full_name?: string | null;
           created_at?: string;
+          privacy_notice_ack_at?: string | null;
+          privacy_notice_version?: string | null;
+          pseudonymized_at?: string | null;
         };
       } & NoRelationships;
 

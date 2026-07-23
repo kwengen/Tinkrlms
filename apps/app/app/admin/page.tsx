@@ -34,6 +34,11 @@ export default async function AdminPage() {
                 Importer cmi5-kurs
               </Link>
             </li>
+            <li>
+              <Link href="/admin/users" className="text-blue-700 underline">
+                Brukere
+              </Link>
+            </li>
           </>
         )}
         <li className="text-gray-400">
