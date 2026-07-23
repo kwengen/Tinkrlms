@@ -11,13 +11,19 @@ export function AckButton({ next }: { next: string }) {
   async function handleClick() {
     setSubmitting(true);
     setError(null);
-    const res = await fetch("/api/personvern/ack", { method: "POST" });
-    setSubmitting(false);
-    if (!res.ok) {
-      setError("Kunne ikke lagre. Prøv igjen.");
-      return;
+    try {
+      const res = await fetch("/api/personvern/ack", { method: "POST" });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        setError(body.error ?? `Kunne ikke lagre (${res.status}). Prøv igjen.`);
+        return;
+      }
+      router.push(next);
+    } catch (e) {
+      setError(`Nettverksfeil: ${String(e)}`);
+    } finally {
+      setSubmitting(false);
     }
-    router.push(next);
   }
 
   return (
