@@ -12,14 +12,14 @@ export default async function EnrollPage() {
 
   const supabase = createServerSupabaseClient();
 
-  const [{ data: courseVersions }, { data: orgUsers }] = await Promise.all([
+  const [{ data: courseVersions }, { data: orgRoles }] = await Promise.all([
     supabase
       .from("course_versions")
       .select("id, version_label, courses(title)")
       .order("version_label"),
     supabase
       .from("user_roles")
-      .select("user_id, role, profiles(full_name)")
+      .select("user_id")
       .eq("org_id", orgId)
       .neq("role", "org_ansvarlig"),
   ]);
@@ -32,17 +32,16 @@ export default async function EnrollPage() {
     };
   });
 
-  const seenUserIds = new Set<string>();
-  const users = (orgUsers ?? [])
-    .filter((row) => {
-      if (seenUserIds.has(row.user_id)) return false;
-      seenUserIds.add(row.user_id);
-      return true;
-    })
-    .map((row) => ({
-      id: row.user_id as string,
-      label: (row.profiles as unknown as { full_name: string | null } | null)?.full_name ?? row.user_id,
-    }));
+  // user_roles and profiles are siblings (both FK to auth.users, not to
+  // each other) — PostgREST can't auto-embed across that, so profiles are
+  // fetched separately and merged here rather than via .select("profiles(...)").
+  const userIds = [...new Set((orgRoles ?? []).map((r) => r.user_id as string))];
+  const { data: orgProfiles } =
+    userIds.length > 0
+      ? await supabase.from("profiles").select("user_id, full_name").in("user_id", userIds)
+      : { data: [] as { user_id: string; full_name: string | null }[] };
+  const fullNameByUserId = new Map((orgProfiles ?? []).map((p) => [p.user_id, p.full_name]));
+  const users = userIds.map((id) => ({ id, label: fullNameByUserId.get(id) ?? id }));
 
   return (
     <main className="mx-auto max-w-2xl p-8">
