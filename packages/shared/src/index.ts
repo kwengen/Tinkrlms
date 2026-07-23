@@ -6,4 +6,5 @@ export * from "./import";
 export * from "./xapi";
 export * from "./launch";
 export * from "./ingest";
+export * from "./certificates";
 export type { Database, Json, UserRole, MoveOnType, LaunchMethodType, LaunchModeType, RegistrationStatusType, SessionStatusType, EnrollmentStatusType, CourseCompletionStatusType } from "./types/database";

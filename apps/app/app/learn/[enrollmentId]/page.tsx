@@ -21,15 +21,23 @@ export default async function EnrollmentPage({
     .maybeSingle();
   if (!enrollment) redirect("/learn");
 
-  const { data: aus } = await supabase
-    .from("assignable_units")
-    .select("id, au_index, launch_url, move_on")
-    .eq("course_version_id", enrollment.course_version_id)
-    .order("au_index");
+  const [{ data: aus }, { data: completion }] = await Promise.all([
+    supabase
+      .from("assignable_units")
+      .select("id, au_index, launch_url, move_on")
+      .eq("course_version_id", enrollment.course_version_id)
+      .order("au_index"),
+    supabase
+      .from("course_completion")
+      .select("satisfied, certificate_id, certificates(cert_uuid)")
+      .eq("enrollment_id", enrollment.id)
+      .maybeSingle(),
+  ]);
 
   const courseVersion = enrollment.course_versions as unknown as {
     courses: { title: string } | null;
   } | null;
+  const certUuid = (completion?.certificates as unknown as { cert_uuid: string } | null)?.cert_uuid;
 
   return (
     <main className="mx-auto max-w-2xl p-8">
@@ -37,6 +45,15 @@ export default async function EnrollmentPage({
         &larr; Mine kurs
       </Link>
       <h1 className="mt-2 text-2xl font-semibold">{courseVersion?.courses?.title ?? "Kurs"}</h1>
+
+      {completion?.satisfied && certUuid && (
+        <a
+          href={`/api/certificates/${certUuid}/download`}
+          className="mt-4 inline-block rounded border border-green-700 px-3 py-1 text-sm text-green-700"
+        >
+          Last ned kursbevis
+        </a>
+      )}
 
       <ul className="mt-6 flex flex-col gap-2">
         {(aus ?? []).map((au) => (
