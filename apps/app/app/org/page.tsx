@@ -29,9 +29,14 @@ export default async function OrgPage() {
             </Link>
           </li>
         )}
-        <li className="text-gray-400">
-          Kurstildeling, resultater og fremdrift kommer i neste byggefase.
-        </li>
+        {isOrgAnsvarlig && (
+          <li>
+            <Link href="/org/enroll" className="text-blue-700 underline">
+              Meld på kurs
+            </Link>
+          </li>
+        )}
+        <li className="text-gray-400">Resultater og fremdrift kommer i neste byggefase.</li>
       </ul>
     </main>
   );
