@@ -36,6 +36,20 @@ export default async function OrgPage() {
             </Link>
           </li>
         )}
+        {(isOrgAnsvarlig || isKursAnsvarlig) && (
+          <li>
+            <Link href="/org/assignments" className="text-blue-700 underline">
+              Tildelinger
+            </Link>
+          </li>
+        )}
+        {isOrgAnsvarlig && (
+          <li>
+            <Link href="/org/catalog" className="text-blue-700 underline">
+              Kurskatalog (selvpåmelding)
+            </Link>
+          </li>
+        )}
         <li className="text-gray-400">Resultater og fremdrift kommer i neste byggefase.</li>
       </ul>
     </main>
