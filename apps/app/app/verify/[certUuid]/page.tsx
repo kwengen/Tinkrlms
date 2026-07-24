@@ -15,7 +15,7 @@ export default async function VerifyPage({ params }: { params: { certUuid: strin
 
   const { data: cert } = await admin
     .from("certificates")
-    .select("issued_at, revoked, user_id, course_version_id")
+    .select("issued_at, revoked_at, user_id, course_version_id")
     .eq("cert_uuid", params.certUuid)
     .maybeSingle();
 
@@ -42,8 +42,10 @@ export default async function VerifyPage({ params }: { params: { certUuid: strin
 
   return (
     <main className="mx-auto max-w-md p-8 text-center">
-      {cert.revoked ? (
-        <h1 className="text-xl font-semibold text-red-700">Kursbeviset er trukket tilbake</h1>
+      {cert.revoked_at ? (
+        <h1 className="text-xl font-semibold text-red-700">
+          Kursbeviset er trukket tilbake ({new Date(cert.revoked_at).toISOString().slice(0, 10)})
+        </h1>
       ) : (
         <h1 className="text-xl font-semibold text-green-700">Gyldig kursbevis ✓</h1>
       )}

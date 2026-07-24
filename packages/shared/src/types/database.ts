@@ -18,6 +18,7 @@ export type RegistrationStatusType = "active" | "terminated" | "satisfied" | "ab
 export type SessionStatusType = "active" | "ended" | "superseded" | "expired";
 export type EnrollmentStatusType = "active" | "completed" | "withdrawn";
 export type CourseCompletionStatusType = "not_started" | "in_progress" | "completed";
+export type AssignmentTargetType = "users" | "groups" | "whole_org";
 
 type NoRelationships = { Relationships: [] };
 
@@ -267,6 +268,7 @@ export interface Database {
           org_id: string;
           user_id: string;
           course_version_id: string;
+          assignment_id: string | null;
           status: EnrollmentStatusType;
           assigned_by: string | null;
           assigned_at: string;
@@ -277,6 +279,7 @@ export interface Database {
           org_id: string;
           user_id: string;
           course_version_id: string;
+          assignment_id?: string | null;
           status?: EnrollmentStatusType;
           assigned_by?: string | null;
           assigned_at?: string;
@@ -287,10 +290,89 @@ export interface Database {
           org_id?: string;
           user_id?: string;
           course_version_id?: string;
+          assignment_id?: string | null;
           status?: EnrollmentStatusType;
           assigned_by?: string | null;
           assigned_at?: string;
           due_at?: string | null;
+        };
+      } & NoRelationships;
+
+      assignments: {
+        Row: {
+          id: string;
+          org_id: string;
+          course_version_id: string;
+          created_by: string;
+          target_type: AssignmentTargetType;
+          target_label: string | null;
+          is_mandatory: boolean;
+          visible_in_dashboard: boolean;
+          available_from: string | null;
+          due_at: string | null;
+          archived_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          course_version_id: string;
+          created_by: string;
+          target_type: AssignmentTargetType;
+          target_label?: string | null;
+          is_mandatory?: boolean;
+          visible_in_dashboard?: boolean;
+          available_from?: string | null;
+          due_at?: string | null;
+          archived_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          org_id?: string;
+          course_version_id?: string;
+          created_by?: string;
+          target_type?: AssignmentTargetType;
+          target_label?: string | null;
+          is_mandatory?: boolean;
+          visible_in_dashboard?: boolean;
+          available_from?: string | null;
+          due_at?: string | null;
+          archived_at?: string | null;
+          created_at?: string;
+        };
+      } & NoRelationships;
+
+      org_course_catalog: {
+        Row: {
+          org_id: string;
+          course_id: string;
+          enabled: boolean;
+          enabled_by: string | null;
+          enabled_at: string | null;
+          disabled_by: string | null;
+          disabled_at: string | null;
+          sort_order: number | null;
+        };
+        Insert: {
+          org_id: string;
+          course_id: string;
+          enabled?: boolean;
+          enabled_by?: string | null;
+          enabled_at?: string | null;
+          disabled_by?: string | null;
+          disabled_at?: string | null;
+          sort_order?: number | null;
+        };
+        Update: {
+          org_id?: string;
+          course_id?: string;
+          enabled?: boolean;
+          enabled_by?: string | null;
+          enabled_at?: string | null;
+          disabled_by?: string | null;
+          disabled_at?: string | null;
+          sort_order?: number | null;
         };
       } & NoRelationships;
 
@@ -534,7 +616,9 @@ export interface Database {
           course_version_id: string;
           pdf_storage_path: string;
           issued_at: string;
-          revoked: boolean;
+          revoked_at: string | null;
+          revoked_by: string | null;
+          revocation_reason: string | null;
         };
         Insert: {
           id?: string;
@@ -544,7 +628,9 @@ export interface Database {
           course_version_id: string;
           pdf_storage_path: string;
           issued_at?: string;
-          revoked?: boolean;
+          revoked_at?: string | null;
+          revoked_by?: string | null;
+          revocation_reason?: string | null;
         };
         Update: {
           id?: string;
@@ -554,7 +640,9 @@ export interface Database {
           course_version_id?: string;
           pdf_storage_path?: string;
           issued_at?: string;
-          revoked?: boolean;
+          revoked_at?: string | null;
+          revoked_by?: string | null;
+          revocation_reason?: string | null;
         };
       } & NoRelationships;
 
@@ -588,7 +676,16 @@ export interface Database {
         };
       } & NoRelationships;
     };
-    Views: Record<string, never>;
+    Views: {
+      course_active_versions: {
+        Row: {
+          course_id: string;
+          course_version_id: string;
+          version_label: string;
+          created_at: string;
+        };
+      } & NoRelationships;
+    };
     Functions: {
       has_org_access: { Args: { p_uid: string; p_org_id: string }; Returns: boolean };
       has_course_access: { Args: { p_uid: string; p_course_id: string }; Returns: boolean };
@@ -625,6 +722,13 @@ export interface Database {
           p_pdf_storage_path: string;
         };
         Returns: { certificate_id: string; already_issued: boolean }[];
+      };
+      assign_enrollments: {
+        Args: {
+          p_assignment_id: string;
+          p_user_ids: string[];
+        };
+        Returns: { user_id: string; enrollment_id: string; had_other_assignment: boolean }[];
       };
     };
     Enums: {

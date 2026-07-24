@@ -23,6 +23,9 @@ export default async function LearnPage() {
         <SignOutButton />
       </div>
       <p className="mt-2 text-gray-600">Innlogget som {ctx.fullName ?? ctx.email}.</p>
+      <Link href="/learn/catalog" className="mt-2 inline-block text-sm text-blue-700 underline">
+        Kurskatalog (meld deg på flere kurs)
+      </Link>
 
       <ul className="mt-6 flex flex-col gap-2">
         {(enrollments ?? []).map((e) => {
